@@ -8,7 +8,7 @@ void Draw::DrawLineBresenham(int x0, int y0, int x1, int y1)
   int uy = ((dy > 0) << 1) - 1; // set y_step is 1 or -1
   int x = x0, y = y0, e;
 
-  dx = std::abs(dx); dy = std::abs(dy);
+  dx = abs(dx); dy = abs(dy);
   if (dx >= dy) // |k| < 1
     {
       e = -dx;
@@ -58,46 +58,68 @@ void Draw::DrawCurve(int x0, int y0, int r)
     }
 }
 
-void Draw::FillColor()
+void Draw::AntiAliasing(int x0, int y0, int x1, int y1)
 {
+  float filter_weights[9] = {1.0/16, 1.0/8, 1.0/16, 1.0/8, 1.0/4, 1.0/8, 1.0/16, 1.0/8, 1.0/16};
+  float k = float(y1 - y0) / (x1 - x0);
+  float b = y0 - k * x0;
+  float compare_number = sqrt(k * k + 1); // if ((kx - y + b) <= compare_number), add its weights_
+  for (int i = x0 / 3; i < x1 / 3; i++)
+    for (int j = y0 / 3; j < y1 / 3; j++)
+      {
+        float sum = 0;
+        for (int m = 0; m < 3; m++)
+          {
+            float x = i * 3 + m + 0.5;
+            for (int n = 0; n < 3; n++)
+            {
+              float y = j * 3 + n + 0.5;
+              if (std::fabs(k * x - y + b) <= compare_number) sum += filter_weights[m * 3 + n];
+            }
+          }
+        DrawPixel(i, j, sum, ANTI);
 
+      }
 }
 
-Vec3b Draw::Color2Scalar()
+Vec3b Draw::Color2Scalar(float alpha)
 {
   Vec3b color;
   switch(color_)
     {
     case red:
       {
-        color.val[0] = 0; color.val[1] = 0; color.val[2] = 255;
+        color.val[0] = 0; color.val[1] = 0; color.val[2] = 255 * alpha;
         return color;
         break;
       }
     case blue:
       {
-        color.val[0] = 255; color.val[1] = 0; color.val[2] = 0;
+        color.val[0] = int(255 * alpha); color.val[1] = 0; color.val[2] = 0;
         return color;
         break;
       }
     case green:
       {
-        color.val[0] = 0; color.val[1] = 255; color.val[2] = 0;
+        color.val[0] = 0; color.val[1] = 255 * alpha; color.val[2] = 0;
         return color;
         break;
       }
     case white:
       {
-        color.val[0] = 255; color.val[1] = 255; color.val[2] = 255;
+        color.val[0] = 255 * alpha; color.val[1] = 255 * alpha; color.val[2] = 255 * alpha;
         return color;
         break;
       }
     }
 }
 
-void Draw::DrawPixel(int x, int y)
+void Draw::DrawPixel(int x, int y, float alpha, bool anti)
 {
-  scene_.at<Vec3b>(y, x) = Color2Scalar();
+  if (anti) {scene_anti_.at<Vec3b>(y, x) = Color2Scalar(alpha);
+    //if (alpha != 0 ) std::cout <<x << " " << y <<"     ";
+  }
+  else scene_.at<Vec3b>(y, x) = Color2Scalar(alpha);
 }
 
 void Draw::DrawSymmetryPixel(int x, int y, int offset_x, int offset_y)
@@ -116,6 +138,8 @@ void Draw::ShowImage()
 {
   namedWindow("Display window", WINDOW_AUTOSIZE);// Create a window for display.
   imshow("Display window", scene_);
+  namedWindow("Display anti window", WINDOW_AUTOSIZE);// Create a window for display.
+  imshow("Display anti window", scene_anti_);
   waitKey(0);
 }
 

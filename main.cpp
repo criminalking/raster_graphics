@@ -1,29 +1,24 @@
 #include "iostream"
+#include <stdlib.h>
 #include "draw.h"
 
-int main()
+int main(int argc, char** argv)
 {
-  int x0, y0, x1, y1;
+  if (argc != 5)
+    {
+      std::cout << "Input error! Please input 4 arguments(x0, y0, x1, y1)!\n";
+      return 0;
+    }
+  int x0 = atoi(argv[1]), y0 = atoi(argv[2]), x1 = atoi(argv[3]), y1 = atoi(argv[4]);
   Draw draw;
-  while(1)
+  if (!draw.CheckInput(x0, y0, x1, y1))
     {
-      std::cout << "Line: Please input x0, y0, x1, y1: ";
-      std::cin >> x0 >> y0 >> x1 >> y1;
-      if (draw.CheckInput(x0, y0, x1, y1)) break;
-      else std::cout << "Input error!!!\n";
+      std::cout << "Input error! Out of range!\n";
+      return 0;
     }
   draw.set_color(Draw::blue);
   draw.DrawLineBresenham(x0, y0, x1, y1);
-
-  while(1)
-    {
-      std::cout << "Line: Please input x0, y0, x1, y1: "; // TODO: fault-tolerant
-      std::cin >> x0 >> y0 >> x1 >> y1;
-      if (draw.CheckInput(x0, y0, x1, y1)) break;
-      else std::cout << "Input error!!!\n";
-    }
-  draw.set_color(Draw::blue);
-  draw.DrawLineBresenham(x0, y0, x1, y1);
+  draw.AntiAliasing(3*x0, 3*y0, 3*x1, 3*y1);
 
   // int r;
   // std::cout << "Circle: Please input x0, y0, r: ";
