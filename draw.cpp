@@ -2,21 +2,39 @@
 
 void Draw::DrawLineBresenham(int x0, int y0, int x1, int y1)
 {
-  int x, y, dx, dy, e;
-  dx = x1 - x0;
-  dy = y1 - y0;
-  e = -dx;
-  x = x0;
-  y = y0;
-  for (int i = 0; i <= dx; i++)
+  int dx = x1 - x0;
+  int dy = y1 - y0;
+  int ux = ((dx > 0) << 1) - 1; // set x-step is 1 or -1
+  int uy = ((dy > 0) << 1) - 1; // set y_step is 1 or -1
+  int x = x0, y = y0, e;
+
+  dx = std::abs(dx); dy = std::abs(dy);
+  if (dx >= dy) // |k| < 1
     {
-      DrawPixel(x, y);
-      x++;
-      e += 2 * dy;
-      if (e >= 0)
+      e = -dx;
+      for (int i = 0; i <= dx; i++)
         {
-          y++;
-          e -= 2 * dx;
+          DrawPixel(x, y);
+          x += ux;
+          e += 2 * dy;
+          if (e >= 0)
+            {
+              y += uy; e -= 2 * dx;
+            }
+        }
+    }
+  else // |k| >= 1
+    {
+      e = -dy;
+      for (int i = 0; i <= dy; i++)
+        {
+          DrawPixel(x, y);
+          y += uy;
+          e += 2 * dx;
+          if (e >= 0)
+            {
+              x += ux; e -= 2 * dy;
+            }
         }
     }
 }
@@ -79,7 +97,7 @@ Vec3b Draw::Color2Scalar()
 
 void Draw::DrawPixel(int x, int y)
 {
-  scene.at<Vec3b>(x, y) = Color2Scalar();
+  scene.at<Vec3b>(y, x) = Color2Scalar();
 }
 
 void Draw::DrawSymmetryPixel(int x, int y, int offset_x, int offset_y)

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <algorithm>
+#include <cmath>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
@@ -11,7 +13,7 @@ class Draw
  Draw(): scene(Size(400, 400), CV_8UC3, Scalar(0)) {color_ = Draw::blue;}
   void ShowImage();
   void DrawLineBresenham(int x0, int y0, int x1, int y1);
-  void DrawCurve(int x0, int y0, int r); // (x0, y0) is the top point of one circle
+  void DrawCurve(int x0, int y0, int r); // (x0, y0) is the center of one circle
   void FillColor();
   void set_color(Color color) {color_ = color;}
 
@@ -23,5 +25,4 @@ class Draw
   Color color_;
 
   Mat scene;
-
 };
