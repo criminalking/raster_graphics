@@ -97,7 +97,7 @@ Vec3b Draw::Color2Scalar()
 
 void Draw::DrawPixel(int x, int y)
 {
-  scene.at<Vec3b>(y, x) = Color2Scalar();
+  scene_.at<Vec3b>(y, x) = Color2Scalar();
 }
 
 void Draw::DrawSymmetryPixel(int x, int y, int offset_x, int offset_y)
@@ -115,6 +115,15 @@ void Draw::DrawSymmetryPixel(int x, int y, int offset_x, int offset_y)
 void Draw::ShowImage()
 {
   namedWindow("Display window", WINDOW_AUTOSIZE);// Create a window for display.
-  imshow("Display window", scene);
+  imshow("Display window", scene_);
   waitKey(0);
+}
+
+bool Draw::CheckInput(int x0, int y0, int x1, int y1)
+{
+  if (x0 < 0 || x0 >= height_) return false;
+  if (x1 < 0 || x1 >= height_) return false;
+  if (y0 < 0 || y0 >= width_) return false;
+  if (y1 < 0 || y1 >= width_) return false;
+  return true;
 }
