@@ -40,9 +40,10 @@ void GameGui::DrawLineWithAnti()
 
 }
 
-void GameGui::mousePressEvent(QMouseEvent * e)
+void GameGui::mousePressEvent(QMouseEvent *e)
 {
-  //QPointF pt = mapToScene(e->pos());
+  QPointF pt = e->pos(); // from (0, 75) to (460, 500)
+  std::cout << pt.x() << " " << pt.y() << std::endl;
   //Point new_point(pt.x()/10.0, pt.y()/10.0);
   //_AddPoint(new_point);
   //emit newPoint(points_.size());

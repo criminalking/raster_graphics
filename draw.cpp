@@ -116,9 +116,7 @@ Vec3b Draw::Color2Scalar(float alpha)
 
 void Draw::DrawPixel(int x, int y, float alpha, bool anti)
 {
-  if (anti) {scene_anti_.at<Vec3b>(y, x) = Color2Scalar(alpha);
-    //if (alpha != 0 ) std::cout <<x << " " << y <<"     ";
-  }
+  if (anti) scene_anti_.at<Vec3b>(y, x) = Color2Scalar(alpha);
   else scene_.at<Vec3b>(y, x) = Color2Scalar(alpha);
 }
 
@@ -134,20 +132,30 @@ void Draw::DrawSymmetryPixel(int x, int y, int offset_x, int offset_y)
   DrawPixel(-y + offset_x, -x + offset_y);
 }
 
-void Draw::ShowImage()
+void Draw::ShowImage(bool anti)
 {
   namedWindow("Display window", WINDOW_AUTOSIZE);// Create a window for display.
   imshow("Display window", scene_);
-  namedWindow("Display anti window", WINDOW_AUTOSIZE);// Create a window for display.
-  imshow("Display anti window", scene_anti_);
+  if (anti)
+    {
+      namedWindow("Display anti window", WINDOW_AUTOSIZE);// Create a window for display.
+      imshow("Display anti window", scene_anti_);
+    }
   waitKey(0);
 }
 
-bool Draw::CheckInput(int x0, int y0, int x1, int y1)
+bool Draw::CheckLineInput(int x0, int y0, int x1, int y1)
 {
   if (x0 < 0 || x0 >= height_) return false;
   if (x1 < 0 || x1 >= height_) return false;
   if (y0 < 0 || y0 >= width_) return false;
   if (y1 < 0 || y1 >= width_) return false;
   return true;
+}
+
+bool Draw::CheckCircleInput(int x0, int y0, int r)
+{
+  if (x0 - r <= 0 || x0 + r >= height_) return false;
+  if (y0 - r <= 0 || y0 + r >= width_) return false;
+  else return true;
 }

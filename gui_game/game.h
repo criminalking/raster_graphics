@@ -25,7 +25,10 @@ class GameGui:public QWidget
     ui.label->setText(" ");
     scene = new QGraphicsScene(0, 0, 400, 400); // set the size of scene
     view = new QGraphicsView(scene);
-    ui.pieceLayout->addWidget(view);
+    //QPixmap pix("/Users/lu/Documents/projects/my/raster_graphics/gui_game/background_light.png");
+    //pix.scaled(400, 400,  Qt::IgnoreAspectRatio);
+    //scene->addPixmap(pix);
+    ui.verticalLayout->addWidget(view);
   }
 
  public slots:
@@ -33,6 +36,9 @@ class GameGui:public QWidget
    void DrawLine();
    void DrawLineWithAnti();
    void mousePressEvent(QMouseEvent* e);
+
+ signals:
+  void newPoint(int num_point);
 
   private:
     Ui::GameForm ui;
