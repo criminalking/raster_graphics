@@ -4,7 +4,8 @@
 
 int main(int argc, char** argv)
 {
-  Draw draw;
+  int kernel = 3;
+  Draw draw(kernel);
   if (argc == 5)
     {
       int x0 = atoi(argv[1]), y0 = atoi(argv[2]), x1 = atoi(argv[3]), y1 = atoi(argv[4]);
@@ -13,9 +14,9 @@ int main(int argc, char** argv)
           std::cout << "Input error! Out of range!\n";
           return 0;
         }
-      draw.set_color(Draw::blue);
+      draw.set_color(Draw::red);
       draw.DrawLineBresenham(x0, y0, x1, y1); // without anti-aliasing
-      draw.AntiAliasing(3*x0, 3*y0, 3*x1, 3*y1); // with anti-aliasing
+      draw.AntiAliasing(kernel * x0, kernel * y0, kernel * x1, kernel * y1); // with anti-aliasing
       draw.ShowImage(true); // need anti
     }
   else if(argc == 4)

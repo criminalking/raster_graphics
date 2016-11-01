@@ -60,21 +60,21 @@ void Draw::DrawCurve(int x0, int y0, int r)
 
 void Draw::AntiAliasing(int x0, int y0, int x1, int y1)
 {
-  float filter_weights[9] = {1.0/16, 1.0/8, 1.0/16, 1.0/8, 1.0/4, 1.0/8, 1.0/16, 1.0/8, 1.0/16};
   float k = float(y1 - y0) / (x1 - x0);
   float b = y0 - k * x0;
   float compare_number = sqrt(k * k + 1); // if ((kx - y + b) <= compare_number), add its weights_
-  for (int i = x0 / 3; i < x1 / 3; i++)
-    for (int j = y0 / 3; j < y1 / 3; j++)
+  for (int i = x0 / kernel_; i < x1 / kernel_; i++)
+    for (int j = y0 / kernel_; j < y1 / kernel_; j++)
       {
         float sum = 0;
-        for (int m = 0; m < 3; m++)
+        for (int m = 0; m < kernel_; m++)
           {
-            float x = i * 3 + m + 0.5;
-            for (int n = 0; n < 3; n++)
+            float x = i * kernel_ + m + 0.5;
+            for (int n = 0; n < kernel_; n++)
             {
-              float y = j * 3 + n + 0.5;
-              if (std::fabs(k * x - y + b) <= compare_number) sum += filter_weights[m * 3 + n];
+              float y = j * kernel_ + n + 0.5;
+              if (std::fabs(k * x - y + b) <= compare_number) sum += 0.1 + 1.0/(kernel_ * kernel_); // uniform
+              //if (std::fabs(k * x - y + b) <= compare_number) sum += 0.1 + filter_weights_[m * kernel_ + n]; // gaussian
             }
           }
         DrawPixel(i, j, sum, ANTI);
@@ -84,6 +84,7 @@ void Draw::AntiAliasing(int x0, int y0, int x1, int y1)
 
 Vec3b Draw::Color2Scalar(float alpha)
 {
+  if (alpha > 1.0) alpha = 1.0;
   Vec3b color;
   switch(color_)
     {
@@ -95,7 +96,7 @@ Vec3b Draw::Color2Scalar(float alpha)
       }
     case blue:
       {
-        color.val[0] = int(255 * alpha); color.val[1] = 0; color.val[2] = 0;
+        color.val[0] = 255 * alpha; color.val[1] = 0; color.val[2] = 0;
         return color;
         break;
       }
